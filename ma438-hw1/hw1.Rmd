@@ -1,0 +1,299 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+CS373 Homework 1<br>
+Full Name: Ma, Ji<br>
+Purdue Email: ma438@purdue.edu<br>
+PUID: 28947432<br>
+
+## 1 Part I: Basic Probability and Statistics
+1. (4 pts) Consider an experiment where a coin is tossed repeatedly until the first time a head is observed.
+	
+	This is a geometric distribution
+	
+	* a) What is the sample space for this experiment? What is the probability that the coin turns up heads after i tosses?
+		
+		The sample space is {H, TH, TTH, TTTH, ...}
+		
+		$(1-p)^{k-1}p$
+		
+		So, the probability will be $(1- \frac{1}{2})^{i - 1}\frac{1}{2} = \frac{1}{2} ^ {i}$
+		
+	
+	* b) Let E be the event that the first time a head turns up is after an even number of tosses. What set of outcomes belong to this event? What is the probability that E occurs?
+		$(1-p)^{k-1}p$, where k is even
+		
+		So, $1/2^{2}$ + $1/2^{4}$ + ....
+		
+		a = 1/4 , r = 1/4	
+		
+		$\frac{a}{1-r} = \frac{1/4}{3/4} = \frac{1}{3}$
+		
+		The sample space is {TH, TTTH, TTTTTH...}
+
+2. (5 pts) Two standard dice are rolled. Let E be the event that the sum of the dice is odd; let F be the event that at least one of the dice lands on 1; and let G be the event that the sum is 5. Compute the following:
+	
+	Total events = 36
+
+	E=(1,2),(1,4),(1,6),(2,1),(2,3),(2,5),(3,2),(3,4),(3,6),(4,1),(4,3),(4,5),(5,2),(5,4),(5,6),(6,1),(6,3),(6,5)
+	
+	F=(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(2,1),(3,1),(4,1),(5,1),(6,1)
+	
+	G=(1,4),(2,3),(3,2),(4,1)
+
+	* a) P(E∩F) 
+		
+		{(1, 2),(1, 4),(1, 6),(2, 1),(4, 1),(6, 1)}
+		
+		$\frac{6}{6^2} = \frac{1}{6}$
+	* b) P(E∪F) 
+
+		$\frac{23}{36}$
+		
+	* c) P(F ∪ G)
+	
+		$\frac{13}{36}$
+	* d) P(E ∪ ¬F)
+
+		$\frac{31}{36}$
+		
+	* e) P(E∪F∪G)
+
+		$\frac{23}{36}$
+		
+
+3. (6 pts) A system is built using 3 disks d1 , d2 , d3 having probabilities of failure 0.01, 0.03 and 0.05 respectively. Suppose the disks fail independently.
+	* a) Let E denote the event of loss of data, which occurs only if two or more disks fail. Compute P (E), the probability of loss of data.
+
+		P(¬E) = 1 disk fail or no disk fail = 0.99 * 0.97 * 0.95 +  0.99 * 0.97 * 0.05 + 0.99 * 0.03 * 0.95 + 0.01 * 0.97 * 0.95 = 0.99773
+		
+		P(E) = 1 - 0.99773 = 0.00227
+		
+	* b) Instead, let F denote the event that at least one of the following happens: (i) d1 fails; (ii) d2 and d3 both fail. If loss of data only occurs when event F occurs, then what is the probability that there is loss of data?
+
+		P(F) = P(i ∪ ii) = 0.01 * 0.97 * 0.95 + 0.99 * 0.03 * 0.05 - 0.01 * 0.03 * 0.05 = 0.010685
+		
+	* c) Considering the setting of 3b, given that d3 has failed, what is the conditional probability that event F will occur and there will be loss of data?
+
+	G:  d3 has failed
+	
+	P(F | G) = P(F∩G) / P(G) =  0.99 * 0.03 * 0.05 / (0.99 * 0.97 * 0.05) = 0.0309
+	
+4. (6 pts) 52% of the students at a particular college are female. 5% of the students in the college are majoring in computer science. 0.55% of the students are women majoring in computer science.
+
+	F: female P(F) = 0.52
+	
+	C: CS studdent P(C) = 0.05
+	
+	P(C ∩ F) = 0.0055
+	
+	* a) If a student is selected at random, find the conditional probability that the student is female given that they are majoring in computer science. (State this as a conditional probability and show the calculation.)
+
+	P(F | C) = P(F ∩ C) / P (C) = 0.0055 / 0.05 = 0.11
+	
+	* b) If a student is selected at random, find the conditional probability that the student is majoring in computer science given that they are female. (State this as a conditional probability and show the calculation.)
+	
+	P(C | F) = P(F ∩ C) / P (F) = 0.0055 / 0.52 = 0.0106
+	
+	* c) Now suppose that the overall proportion of female students increases to 57% and that the conditional probability from 4a changes (i.e., increases or de- creases) to 15%. Compute the updated conditional probability that a student is majoring in computer science given that they are female. (Assume that the overall proportion of students majoring in CS stays the same.)
+
+	F: female P(F) = 0.57
+	
+	P(F | C) = 0.15
+	
+	P(C | F) = P(F ∩ C) / P(F) = P(F | C) * P(C) / P(F) = 0.15 * 0.05 / 0.57 = 0.0132
+
+5. (6 pts) Let Xn be the random variable that equals the number of heads minus the number of tails when n coins are flipped. Each flip has a probability of p of heads, 1 - p probability of tails. Do not assume p = 1/2.
+	* a) What is the expected value of Xn ? 
+
+		E of heads = np, let's assume i heads, and n-i tails
+		
+		P(i - (n - i)) = P(2i - n); E(2i - n) = 2E(i) - E(n) = 2np - n
+		
+	* b) What is the variance of Xn?
+		
+		Var = E($X_n^2$) - $E(X_n)^2$ = 
+		4np(1-p)
+		
+	* c) Compute the expected value and variance of X3.
+		Plug it in, n = 3
+		
+		E(X3) = 6p - 3
+		
+		Var(X3) = 12p(1-p)
+		
+
+## 2 Part II: R
+
+## 3 Data import and summarization
+
+```{r}
+yelp = read.csv("yelp.csv",  header = TRUE, quote="\"", comment.char="")
+```
+
+(a) (2 pts) Print the names of the columns in the table using names(). 
+
+
+```{r}
+names(yelp)
+```
+
+(b) (2 pts) Print a summary of the data using the summary() function.
+
+```{r}
+summary(yelp)
+```
+
+(c) (2 pts) Print a summary of the noiseLevel attribute and the stars attribute.
+```{r}
+summary(yelp$noiseLevel)
+summary(yelp$stars)
+```
+
+## 4 1D plots
+
+
+(a) (4 pts) Plot a histogram of the checkins attribute. Use the hist() function with its default values and make sure to title the plot with the name of the attribute for clarity.
+
+```{r}
+hist(yelp$checkins)
+```
+(b) (4 pts) Compute the logged values for checkins (you can use log() to compute the log of all the values in a vector). Plot a histogram of the logged values.
+```{r}
+hist(log(yelp$checkins))
+```
+
+(c) (4 pts) Discuss the differences between the two plots and the information they convey about the distribution of checkins values in the data.
+
+The different between two plots is abvious. The first plot is skewed as hell, and the log function will help us remove the skewness and it will reveil the more helpful information.Because of the density for the low frequency is too high, so the normal histogram is sort of meaningless.
+
+## 5 Sampling and transforming data
+
+(a) (4 pts) The attributes categories and recommendedFor each contain a comma separated list of values associated with each restaurant. Compute two new boolean features: isAmerican and goodForDinner with a value of TRUE if the list contains “American” (in categories ), “dinner” (in recommendedFor ) respectively and FALSE otherwise. You can use the function grepl(str, f$column name) to check whether the values in column name contain the string str.
+Append the two new columns to the original data frame, using cbind(), to increase the number of features to 32. Show the output of summary() for those two columns.
+```{r}
+isAmerican = grepl("American", yelp$categories)
+goodForDinner = grepl("dinner", yelp$recommendedFor)
+yelp = cbind(yelp, isAmerican, goodForDinner)
+summary(yelp$isAmerican)
+summary(yelp$goodForDinner)
+```
+
+
+(b) (4 pts) Print the quantiles (using quantile()) for the reviewCount attribute.
+```{r}
+quantile(yelp$reviewCount)
+```
+
+
+(c) (6 pts) Select a subset of the data with reviewCount value ≤ 1st quartile (25th percentile). You can use subset() or select from the data frame with [] operations.
+Print a summary of the above subset for the following attributes: reviewCount, stars, attire, priceRange, delivery, goodForKids, and compare them to their summary for the full dataset.
+Discuss any differences in the distributions of the numerical attributes that you find.
+```{r}
+lowReviewCount = subset(yelp, yelp$reviewCount <= quantile(yelp$reviewCount, 0.25))
+#instead of give summary for individual, I print out the general summary and look at the reviewCount, stars, attire, priceRange, delivery, goodForKids individually.
+summary(lowReviewCount)
+summary(yelp)
+```
+According to the different result showed up in the above summary stats:
+reviewCount: of course the mean review count in the 25 quantile is 5.247, which is much lower than the mean of whole dataset 49.03
+stars: The mean of quantiled stars is 3.418 which is similar to the mean of whole dataset 3.544.
+attire: Although the amount of casual, dressy and formal are different from original dataset to 25 quantile daraset, the general porportion in side of the attire is matched up.
+priceRange: We could see that the mean price range in 25 quantile is 1.546 which is slightly less tham original data's 1.631. However, the NA's in the 25 quantile data set is siginicant greater portion compare to the original dataset.
+delivery: The 25 quantile data has similar pattern with the original data in terms of the True, False and NAs distribution inside of the dataset.
+goodForKids: The NAs in the 25 quantile data is significant higher proportion than the original dataset.
+
+## 6 2D plots and correlations
+
+(a) (7 pts) Plot a scatterplot matrix (using pairs()) for the five attributes: stars, reviewCount, checkins, longitude, latitude.
+• Identify which pair of attributes exhibit the most association (as you can determine visually) and discuss if this is interesting or expected, given your domain knowledge.
+```{r}
+pairs(~ stars + reviewCount + checkins + longitude + latitude, data = yelp)
+```
+ReviewCount is very related to checkins, which makes a lot of sense in terms of for those customer who reviewed a certain place, they definately tends to checked in already.
+Another interesting relationship is longitude and latitude, they are strongly associated, I think it makes sense here because we all know that longitude and latitude are related from our instinct.
+
+(b) (7 pts) Calculate the pairwise correlation among the above five attributes using cor().
+• Identify the pair of attributes with largest positive correlation and the pair with largest negative correlation. Report the correlations and discuss how it matches with your visual assessment in part (a).
+```{r}
+cor(yelp[,c('stars', 'reviewCount', 'checkins', 'longitude', 'latitude')])
+```
+Largest pos correlation except the diagnal is latitude and longtitude. It definately match up with the graph since they are have a strong correlation.
+Largest neg correlation is between longitude and checkins, I think it is also true in the graph due to the meaningless cluster of points.
+
+(c) (7 pts) Plot a boxplot (using boxplot()) for each of the following four attributes (checkins, reviewCount, longitude, latitude) vs. the goodForGroups attribute. Omit outliers using the outline argument.
+Make sure to label both axes of the plot with the appropriate attribute names.
+• Identify the attribute that exhibits the most association with goodForGroups (as you can determine visually) and discuss whether this is interesting or expected, given your domain knowledge.
+  It seems like both checkins and reviewCount are kinda associate with goodForGroups from the boxplot. I'll choose to go with Checkins. And I found that both of the attributes are some what interesting. I can't find any direct relationship of how checkins and reviewCount related to weither a place is good for group or not. I mean they are definiately a good decision of weither a place is good or not, but that is not related to group feature from my domain knowledge.
+• For the attribute identified above, calculate its interquartile range for each value of goodForGroups (i.e., a separate IQR for the TRUE instances and the FALSE instances). You can do this with subset() and quantile(). Calculate the overlap between the two IQRs. Discuss whether these results support the conclusion you made based on visual inspection.
+```{r}
+checkinGroup = subset(yelp, goodForGroups==TRUE, select = c(checkins))
+checkinNotGroup = subset(yelp, goodForGroups==FALSE, select = c(checkins))
+quantile(checkinGroup$checkins)
+```
+
+```{r}
+quantile(checkinNotGroup$checkins)
+```
+The overlap between those two IQR is 66 - 19 = 47, which is very minimal compare to the IQR that distinguish the TRUE goodforgroup from false. So, it support the conclusion that I made based on the visual observation.
+```{r}
+boxplot(checkins ~ goodForGroups, data = yelp, outline = FALSE, main="checkins", xlab= "goodForGroups", ylab="checkins")
+```
+
+```{r}
+boxplot(latitude ~ goodForGroups, data = yelp, outline = FALSE, main="latitude", xlab= "goodForGroups", ylab="latitude")
+```
+
+```{r}
+boxplot(longitude ~ goodForGroups, data = yelp, outline = FALSE, main="longitude", xlab= "goodForGroups", ylab="longitude")
+```
+
+```{r}
+boxplot(reviewCount ~ goodForGroups, data = yelp, outline = FALSE, main="reviewCount", xlab= "goodForGroups", ylab="reviewCount")
+```
+
+
+## 7 Identifying potential hypotheses (20 pts)
+During your exploration above, investigate other aspects of the data. Explore relation- ships between variables by assessing plots, computing correlation, or other numerical analysis.
+Identify TWO possible relationships in the data (other than the ones specified in earlier questions) and formulate hypotheses based on the observed data. For each of the two identified relationships:
+
+Relationship A:
+
+(a) Include a plot illustrating the observed relationship (between at least two vari- ables).
+
+```{r}
+boxplot(stars ~ noiseLevel, data = yelp, outline = FALSE, xlab = "noiseLevel", ylab = "stars")
+```
+
+(b) State whether the variables are discrete or continuous and what type of plot is relevant for comparing these two types of variables.
+The star is continuous numericle variable, and the noiselevel is discrete catagorical variable. The boxplot that I used before is good for this data.
+
+(c) Formulateahypothesisabouttheobservedrelationshipasafunctionoftworandom variables (e.g., X is associated with Y).
+noiseLevel is assosiated with stars.
+
+(d) Write the hypothesis as a claim in English, relating it to the attributes in the data.
+The noiseLevel, particularly the very loud noiseLevel will have negative effect on the users review reflecting on the stars of the restaurount.
+
+(e) Identify the type of hypothesis.
+Directional-relational 
+
+Relationship B:
+
+(a) Include a plot illustrating the observed relationship (between at least two vari- ables).
+```{r}
+boxplot(reviewCount ~ priceRange, data = yelp, outline = FALSE, xlab = "priceRange", ylab = "reviewCount")
+```
+
+(b) State whether the variables are discrete or continuous and what type of plot is relevant for comparing these two types of variables.
+reviewCount is a continuous numerical variable, priceRange seems to be a numerical var, but it is actually a discrete catagorical var.
+
+(c) Formulateahypothesisabouttheobservedrelationshipasafunctionoftworandom variables (e.g., X is associated with Y).
+priceRange is assosiated with reviewCount
+
+(d) Write the hypothesis as a claim in English, relating it to the attributes in the data.
+Higher priceRange of the restaurant will tends to have more reviewCount.
+
+(e) Identify the type of hypothesis.
+Directional-relational
