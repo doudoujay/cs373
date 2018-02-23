@@ -63,6 +63,7 @@ def kMean(data):
     idx = np.random.randint(data.shape[0], size=K)
     centers = np.take(X, idx, axis=0)
     count = 0
+    lastScore = 0
     for center in centers:
         print center
         cs.append(cluster(center))
@@ -80,11 +81,12 @@ def kMean(data):
             newCentroid = np.mean(np.take(X, c.data, 0), axis=0)
             c.updateCenter(newCentroid)
 
-        print "Score" + str(wc(cs,data))
-
+        sse = str(wc(cs, data))
+        print "SSE: " + sse
         # Step 4 - break if certain iteration met
         count += 1
-        if count == 10000: break
+        if count == 10000 or lastScore == sse: break
+        lastScore = sse
 
 
 def dist(x1, x2):
