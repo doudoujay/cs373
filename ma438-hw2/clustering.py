@@ -29,6 +29,8 @@ def main(d, k, m):
     #     print x
     if model == 'km':
         kMean(data)
+    elif model == 'ac':
+        agglomerative(data)
 
 
 
@@ -41,9 +43,9 @@ def cluster_distance(c1, c2):
     result = 0
     for x1 in c1.data:
         for x2 in c2.data:
-            result += dist(x1, x2)
+            result += dist(X[x1], X[x2])
 
-    return result / (c1.data.shape[0] * c2.data.shape[0])
+    return result / (len(c1.data) * len(c2.data))
 
 
 # cs: multiple clusters, cs's len is K
@@ -81,12 +83,55 @@ def kMean(data):
             newCentroid = np.mean(np.take(X, c.data, 0), axis=0)
             c.updateCenter(newCentroid)
 
+
         sse = str(wc(cs, data))
         print "SSE: " + sse
         # Step 4 - break if certain iteration met
         count += 1
         if count == 10000 or lastScore == sse: break
         lastScore = sse
+
+def agglomerative(data):
+    # first, every single point is a cluster
+    cs = []
+    checked = []
+    new_cs = []
+    for idx, x in enumerate(X):
+        c = cluster(x)
+        checked.append(False)
+        c.data.append(idx)
+        cs.append(c)
+    # iteratively pick two clusters where their distance is minimal and fuse them. The minumun distance will be decided by the average link cluster distance
+    while(True):
+        # break condition
+        if len(cs) == K: break
+        sse = str(wc(cs, data))
+        print "SSE: " + sse
+        for i, x in enumerate(cs):
+            if not checked[i]:
+                dists = {}
+                for j, y in enumerate(cs):
+                    if i != j and not checked[i] and not checked[j]:
+                        dists[cluster_distance(cs[i], cs[j])] = j
+                minKey = np.argmin(dists.keys())
+                j = dists[dists.keys()[minKey]]
+                # merge the data for two sets
+                newData = np.concatenate((cs[i].data, cs[j].data))
+                # Append the new cluster into the new cs
+                c = cluster(np.mean(np.take(X, newData, 0),  axis=0))
+                c.data = newData
+                new_cs.append(c)
+                # Set them as checked
+                checked[i] = True
+                checked[j] = True
+        # reset the clusters
+        cs = new_cs
+        new_cs = []
+        # reset checked markers
+        checked = []
+        for idx,c in enumerate(cs):
+            checked.append(False)
+
 
 
 def dist(x1, x2):
