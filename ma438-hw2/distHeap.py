@@ -1,6 +1,4 @@
-import heapq
-import itertools
-
+import numpy as np
 
 class distHeap:
     dists = [] # dists arranged in heap
@@ -16,8 +14,7 @@ class distHeap:
             return
         self.clustersMap[clusters] = dist
         self.distsMap[dist] = clusters
-        heapq.heappush(self.dists, dist)
-
+        self.dists.append(dist)
 
     def remove_cluster(self, c1, c2):
         clusters = (c1, c2)
@@ -30,7 +27,7 @@ class distHeap:
 
 
     def min_dist_clusters(self):
-        minDist = heapq.heappop(self.dists)
+        minDist = self.dists[np.argmin(self.dists)]
         c = self.distsMap[minDist]
 
         self.clustersMap.pop(c)

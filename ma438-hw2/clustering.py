@@ -106,28 +106,27 @@ def agglomerative(data):
     while(True):
         # break condition
         print len(cs)
-        if len(cs) == K:
+        if len(cs) <= K:
             sse = str(wc(cs, data))
             print "SSE: " + sse
             break
         for i, x in enumerate(cs):
-
-            if not checked[i]:
-                dists = {}
-                for j, y in enumerate(cs):
-                    if i != j and not checked[i] and not checked[j]:
-                        dists[cluster_distance(cs[i], cs[j])] = j
-                minKey = np.argmin(dists.keys())
-                j = dists[dists.keys()[minKey]]
-                # merge the data for two sets
-                newData = np.concatenate((cs[i].data, cs[j].data))
-                # Append the new cluster into the new cs
-                c = cluster(np.mean(np.take(X, newData, 0),  axis=0))
-                c.data = newData
-                new_cs.append(c)
-                # Set them as checked
-                checked[i] = True
-                checked[j] = True
+            dists = {}
+            for j, y in enumerate(cs):
+                if i != j and not checked[i] and not checked[j]:
+                    dists[cluster_distance(cs[i], cs[j])] = j
+            if len(dists.keys()) == 0: continue
+            minKey = np.argmin(dists.keys())
+            j = dists[dists.keys()[minKey]]
+            # merge the data for two sets
+            newData = np.concatenate((cs[i].data, cs[j].data))
+            # Append the new cluster into the new cs
+            c = cluster(np.mean(np.take(X, newData, 0),  axis=0))
+            c.data = newData
+            new_cs.append(c)
+            # Set them as checked
+            checked[i] = True
+            checked[j] = True
         # reset the clusters
         cs = new_cs
         new_cs = []
