@@ -3,6 +3,7 @@ import sys
 import pandas as pd
 import numpy as np
 from cluster import cluster
+from distHeap import distHeap
 
 datasetPath = ""
 K = 0
@@ -104,10 +105,13 @@ def agglomerative(data):
     # iteratively pick two clusters where their distance is minimal and fuse them. The minumun distance will be decided by the average link cluster distance
     while(True):
         # break condition
-        if len(cs) == K: break
-        sse = str(wc(cs, data))
-        print "SSE: " + sse
+        print len(cs)
+        if len(cs) == K:
+            sse = str(wc(cs, data))
+            print "SSE: " + sse
+            break
         for i, x in enumerate(cs):
+
             if not checked[i]:
                 dists = {}
                 for j, y in enumerate(cs):
@@ -131,6 +135,20 @@ def agglomerative(data):
         checked = []
         for idx,c in enumerate(cs):
             checked.append(False)
+
+# def agglomerative(data):
+# # first, every single point is a cluster
+#     cs = []
+#     heap = distHeap()
+#     for idx, x in enumerate(X):
+#         c = cluster(x)
+#         c.data.append(idx)
+#         cs.append(c)
+#     for i, x in enumerate(cs):
+#         for j in range(i+1, len(cs)):
+#             heap.add_clusters(cs[i], cs[j], cluster_distance(cs[i], cs[j]))
+#
+#     c1, c2 = heap.min_dist_clusters()
 
 
 
