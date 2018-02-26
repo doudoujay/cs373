@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from cluster import cluster
 from distHeap import distHeap
+from sklearn import preprocessing
 
 datasetPath = ""
 K = 0
@@ -34,7 +35,51 @@ def main(d, k, m):
     elif model == 'ac':
         agglomerative(data)
 
+# question 2.c
+def logMain(d,k,m):
+    global datasetPath
+    global xLen
+    global K
+    global model
+    global X
 
+    datasetPath = d
+    K = int(k)
+    model = m
+    data = pd.read_csv(datasetPath, sep=',', quotechar='"', header=0)
+    data = data[['latitude', 'longitude', 'reviewCount', 'checkins']]
+    data['reviewCount'] = np.log(data['reviewCount'])
+    data['checkins'] = np.log(data['checkins'])
+    X = data.as_matrix()
+    xLen = len(X[0])
+    # for x in X:
+    #     print x
+    if model == 'km':
+        kMean(data)
+    elif model == 'ac':
+        agglomerative(data)
+
+def skMain(d,k,m):
+    global datasetPath
+    global xLen
+    global K
+    global model
+    global X
+
+    datasetPath = d
+    K = int(k)
+    model = m
+    data = pd.read_csv(datasetPath, sep=',', quotechar='"', header=0)
+    data = data[['latitude', 'longitude', 'reviewCount', 'checkins']]
+    data = preprocessing.scale(data)
+    X = data
+    xLen = len(X[0])
+    # for x in X:
+    #     print x
+    if model == 'km':
+        kMean(data)
+    elif model == 'ac':
+        agglomerative(data)
 
 
 
