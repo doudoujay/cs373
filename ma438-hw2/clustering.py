@@ -148,6 +148,7 @@ def kMean(data):
 
 def agglomerative(data):
     global globalSse
+    global globalCs
     # first, every single point is a cluster
     cs = []
     checked = []
@@ -165,6 +166,7 @@ def agglomerative(data):
             sse = str(wc(cs, data))
             printResult(cs, sse)
             globalSse = sse
+            globalCs = cs
             break
         for i, x in enumerate(cs):
             dists = {}
