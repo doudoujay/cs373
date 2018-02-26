@@ -11,6 +11,7 @@ model = ""
 xLen = 0
 X = []
 globalSse = 0
+globalCs=[]
 
 def main(d, k, m):
     global datasetPath
@@ -41,6 +42,8 @@ def printCentroid(k, latitude, longitude, reviewCount, checkins):
     print "Centroid%d=[%f,%f,%f,%f]" % (k, latitude, longitude, reviewCount, checkins)
 
 
+
+
 # c: cluster 1, cluster 2
 def cluster_distance(c1, c2):
     result = 0
@@ -64,6 +67,7 @@ def wc(cs,data):
 
 def kMean(data):
     global globalSse
+    global globalCs
     # Step 1 - Pick K random points as cluster centers called centroids.
     cs = []
     idx = np.random.randint(data.shape[0], size=K)
@@ -91,9 +95,9 @@ def kMean(data):
         # Step 4 - break if certain iteration met
         count += 1
         if count == 10000 or lastScore == sse:
-            return sse
             printResult(cs, sse)
             globalSse = sse
+            globalCs = cs
             break
         lastScore = sse
 
@@ -116,7 +120,6 @@ def agglomerative(data):
             sse = str(wc(cs, data))
             printResult(cs, sse)
             globalSse = sse
-            return sse
             break
         for i, x in enumerate(cs):
             dists = {}
