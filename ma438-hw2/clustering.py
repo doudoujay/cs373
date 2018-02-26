@@ -10,7 +10,7 @@ K = 0
 model = ""
 xLen = 0
 X = []
-
+globalSse = 0
 
 def main(d, k, m):
     global datasetPath
@@ -32,6 +32,8 @@ def main(d, k, m):
         kMean(data)
     elif model == 'ac':
         agglomerative(data)
+
+
 
 
 
@@ -61,6 +63,7 @@ def wc(cs,data):
 
 
 def kMean(data):
+    global globalSse
     # Step 1 - Pick K random points as cluster centers called centroids.
     cs = []
     idx = np.random.randint(data.shape[0], size=K)
@@ -68,7 +71,6 @@ def kMean(data):
     count = 0
     lastScore = 0
     for center in centers:
-        print center
         cs.append(cluster(center))
     while True:
         # Step 2 - Assign each xi to nearest cluster by calculating its distance to each centroid.
@@ -86,13 +88,17 @@ def kMean(data):
 
 
         sse = str(wc(cs, data))
-        print "SSE: " + sse
         # Step 4 - break if certain iteration met
         count += 1
-        if count == 10000 or lastScore == sse: break
+        if count == 10000 or lastScore == sse:
+            return sse
+            printResult(cs, sse)
+            globalSse = sse
+            break
         lastScore = sse
 
 def agglomerative(data):
+    global globalSse
     # first, every single point is a cluster
     cs = []
     checked = []
@@ -108,7 +114,9 @@ def agglomerative(data):
         print len(cs)
         if len(cs) <= K:
             sse = str(wc(cs, data))
-            print "SSE: " + sse
+            printResult(cs, sse)
+            globalSse = sse
+            return sse
             break
         for i, x in enumerate(cs):
             dists = {}
@@ -150,6 +158,11 @@ def agglomerative(data):
 #     c1, c2 = heap.min_dist_clusters()
 
 
+
+def printResult(cs, wc):
+    print 'WC-SSE='+wc
+    for idx, c in enumerate(cs):
+        printCentroid(idx+1, c.center[0], c.center[1], c.center[2], c.center[3])
 
 def dist(x1, x2):
     result = 0
