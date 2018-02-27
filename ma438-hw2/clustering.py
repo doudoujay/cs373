@@ -146,69 +146,100 @@ def kMean(data):
             break
         lastScore = sse
 
+# def agglomerative(data):
+#     global globalSse
+#     global globalCs
+#     # first, every single point is a cluster
+#     cs = []
+#     checked = []
+#     new_cs = []
+#     for idx, x in enumerate(X):
+#         c = cluster(x)
+#         checked.append(False)
+#         c.data.append(idx)
+#         cs.append(c)
+#     # iteratively pick two clusters where their distance is minimal and fuse them. The minumun distance will be decided by the average link cluster distance
+#     while(True):
+#         # break condition
+#         print len(cs)
+#         if len(cs) <= K:
+#             sse = str(wc(cs, data))
+#             printResult(cs, sse)
+#             globalSse = sse
+#             globalCs = cs
+#             break
+#         for i, x in enumerate(cs):
+#             dists = {}
+#             for j, y in enumerate(cs):
+#                 if i != j and not checked[i] and not checked[j]:
+#                     dists[cluster_distance(cs[i], cs[j])] = j
+#             if len(dists.keys()) == 0: continue
+#             minKey = np.argmin(dists.keys())
+#             j = dists[dists.keys()[minKey]]
+#             # merge the data for two sets
+#             newData = np.concatenate((cs[i].data, cs[j].data))
+#             # Append the new cluster into the new cs
+#             c = cluster(np.mean(np.take(X, newData, 0),  axis=0))
+#             c.data = newData
+#             new_cs.append(c)
+#             # Set them as checked
+#             checked[i] = True
+#             checked[j] = True
+#         # reset the clusters
+#         cs = new_cs
+#         new_cs = []
+#         # reset checked markers
+#         checked = []
+#         for idx,c in enumerate(cs):
+#             # checked.append(False)
+
 def agglomerative(data):
+# first, every single point is a cluster
     global globalSse
     global globalCs
-    # first, every single point is a cluster
     cs = []
-    checked = []
-    new_cs = []
+    heap = distHeap()
     for idx, x in enumerate(X):
         c = cluster(x)
-        checked.append(False)
         c.data.append(idx)
         cs.append(c)
-    # iteratively pick two clusters where their distance is minimal and fuse them. The minumun distance will be decided by the average link cluster distance
-    while(True):
-        # break condition
-        print len(cs)
+    for i, x in enumerate(cs):
+        for j in range(i+1, len(cs)):
+            dist = cluster_distance(cs[i], cs[j])
+            # print "dist" + str(dist) + " " + str(i) + " " + str(j)
+            heap.add_clusters(cs[i], cs[j], dist)
+
+    while True:
         if len(cs) <= K:
             sse = str(wc(cs, data))
             printResult(cs, sse)
             globalSse = sse
             globalCs = cs
             break
-        for i, x in enumerate(cs):
-            dists = {}
-            for j, y in enumerate(cs):
-                if i != j and not checked[i] and not checked[j]:
-                    dists[cluster_distance(cs[i], cs[j])] = j
-            if len(dists.keys()) == 0: continue
-            minKey = np.argmin(dists.keys())
-            j = dists[dists.keys()[minKey]]
-            # merge the data for two sets
-            newData = np.concatenate((cs[i].data, cs[j].data))
-            # Append the new cluster into the new cs
-            c = cluster(np.mean(np.take(X, newData, 0),  axis=0))
-            c.data = newData
-            new_cs.append(c)
-            # Set them as checked
-            checked[i] = True
-            checked[j] = True
-        # reset the clusters
-        cs = new_cs
-        new_cs = []
-        # reset checked markers
-        checked = []
-        for idx,c in enumerate(cs):
-            checked.append(False)
+        c1, c2 = heap.min_dist_clusters()
 
-# def agglomerative(data):
-# # first, every single point is a cluster
-#     cs = []
-#     heap = distHeap()
-#     for idx, x in enumerate(X):
-#         c = cluster(x)
-#         c.data.append(idx)
-#         cs.append(c)
-#     for i, x in enumerate(cs):
-#         for j in range(i+1, len(cs)):
-#             heap.add_clusters(cs[i], cs[j], cluster_distance(cs[i], cs[j]))
-#
-#     c1, c2 = heap.min_dist_clusters()
-
-
-
+        # merge c1 and c2
+        newData = np.concatenate((c1.data, c2.data))
+        # Append the new cluster into the new cs
+        c = cluster(np.mean(np.take(X, newData, 0),  axis=0))
+        c.data = newData
+        # remove associate c1 and c2
+        for c_old in cs:
+            # print 'remove'
+            heap.remove_cluster(c1, c_old)
+            heap.remove_cluster(c_old, c1)
+            heap.remove_cluster(c2, c_old)
+            heap.remove_cluster(c_old, c2)
+        cs.remove(c1)
+        cs.remove(c2)
+        # add new
+        for c_ind in cs:
+            # print 'add new dist'
+            dist = cluster_distance(c, c_ind)
+            heap.add_clusters(c, c_ind, dist)
+        # print c1.data
+        # print c2.data
+        cs.append(c)
 def printResult(cs, wc):
     print 'WC-SSE='+wc
     for idx, c in enumerate(cs):
