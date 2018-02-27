@@ -26,7 +26,7 @@ def main(d, k, m):
     model = m
     data = pd.read_csv(datasetPath, sep=',', quotechar='"', header=0)
     data = data[['latitude', 'longitude', 'reviewCount', 'checkins']]
-    X = data.as_matrix()[:100]
+    X = data.as_matrix()
     xLen = len(X[0])
     # for x in X:
     #     print x
