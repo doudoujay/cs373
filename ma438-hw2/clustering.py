@@ -26,7 +26,7 @@ def main(d, k, m):
     model = m
     data = pd.read_csv(datasetPath, sep=',', quotechar='"', header=0)
     data = data[['latitude', 'longitude', 'reviewCount', 'checkins']]
-    X = data.as_matrix()
+    X = data.as_matrix()[:1000]
     xLen = len(X[0])
     # for x in X:
     #     print x
@@ -210,6 +210,7 @@ def agglomerative(data):
             heap.add_clusters(cs[i], cs[j], dist)
 
     while True:
+        print len(cs)
         if len(cs) <= K:
             sse = str(wc(cs, data))
             printResult(cs, sse)
@@ -224,12 +225,7 @@ def agglomerative(data):
         c = cluster(np.mean(np.take(X, newData, 0),  axis=0))
         c.data = newData
         # remove associate c1 and c2
-        for c_old in cs:
-            # print 'remove'
-            heap.remove_cluster(c1, c_old)
-            heap.remove_cluster(c_old, c1)
-            heap.remove_cluster(c2, c_old)
-            heap.remove_cluster(c_old, c2)
+        heap.remove_cluster(c1,c2)
         cs.remove(c1)
         cs.remove(c2)
         # add new
@@ -244,6 +240,8 @@ def printResult(cs, wc):
     print 'WC-SSE='+wc
     for idx, c in enumerate(cs):
         printCentroid(idx+1, c.center[0], c.center[1], c.center[2], c.center[3])
+
+
 
 def dist(x1, x2):
     result = 0
