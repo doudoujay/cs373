@@ -5,7 +5,6 @@ import numpy as np
 from cluster import cluster
 from distHeap import distHeap
 from sklearn import preprocessing
-
 datasetPath = ""
 K = 0
 model = ""
@@ -27,7 +26,7 @@ def main(d, k, m):
     model = m
     data = pd.read_csv(datasetPath, sep=',', quotechar='"', header=0)
     data = data[['latitude', 'longitude', 'reviewCount', 'checkins']]
-    X = data.as_matrix()[:1000]
+    X = data.as_matrix()[:100]
     xLen = len(X[0])
     # for x in X:
     #     print x

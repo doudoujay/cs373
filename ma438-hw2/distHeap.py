@@ -1,4 +1,5 @@
 import numpy as np
+import heapq
 class distHeap:
     dists = [] # dists arranged in heap
     clustersMap = {} # clusters(c1, c2)-> dist
@@ -7,7 +8,7 @@ class distHeap:
     REMOVED = '<removed>'
 
     def __init__(self):
-        pass
+        heapq.heapify(self.dists)
     def add_clusters(self, c1, c2, dist):
         self.validCluster[c1] = True
         self.validCluster[c2] = True
@@ -16,7 +17,7 @@ class distHeap:
             return
         self.clustersMap[clusters] = dist
         self.distsMap[dist] = clusters
-        self.dists.append(dist)
+        heapq.heappush(self.dists, dist)
 
     def remove_cluster(self, c1, c2):
         # clusters = (c1, c2)
@@ -32,16 +33,15 @@ class distHeap:
 
 
     def min_dist_clusters(self):
-        minDist = np.min(self.dists)
+        minDist = heapq.heappop(self.dists)
         print minDist
         c = self.distsMap[minDist]
 
         while(self.validCluster[c[0]] == False or self.validCluster[c[1]] == False):
             self.clustersMap.pop(c)
             self.distsMap.pop(minDist)
-            self.dists.remove(minDist)
 
-            minDist = np.min(self.dists)
+            minDist = heapq.heappop(self.dists)
             c = self.distsMap[minDist]
 
         return c
