@@ -32,7 +32,7 @@ class distHeap:
 
 
     def min_dist_clusters(self):
-        minDist = self.dists[np.argmin(self.dists)]
+        minDist = np.min(self.dists)
         print minDist
         c = self.distsMap[minDist]
 
@@ -41,7 +41,7 @@ class distHeap:
             self.distsMap.pop(minDist)
             self.dists.remove(minDist)
 
-            minDist = self.dists[np.argmin(self.dists)]
+            minDist = np.min(self.dists)
             c = self.distsMap[minDist]
 
         return c
