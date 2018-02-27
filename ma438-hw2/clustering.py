@@ -13,6 +13,7 @@ xLen = 0
 X = []
 globalSse = 0
 globalCs=[]
+distDictionary = {}
 
 def main(d, k, m):
     global datasetPath
@@ -98,6 +99,20 @@ def cluster_distance(c1, c2):
 
     return result / (len(c1.data) * len(c2.data))
 
+def cluster_distance_cached(c1,c2):
+    result = 0
+    for x1 in c1.data:
+        for x2 in c2.data:
+            d = 0
+            if (x1, x2) in distDictionary:
+                d = distDictionary[(x1, x2)]
+            elif (x2, x1) in distDictionary:
+                d = distDictionary[(x2, x1)]
+            else:
+                print "not chached"
+                d = dist(X[x1], X[x2])
+            result += d
+    return result / (len(c1.data) * len(c2.data))
 
 # cs: multiple clusters, cs's len is K
 # within-cluster sum of squared errors
@@ -197,6 +212,7 @@ def agglomerative(data):
 # first, every single point is a cluster
     global globalSse
     global globalCs
+    global distDictionary
     cs = []
     heap = distHeap()
     for idx, x in enumerate(X):
@@ -206,6 +222,8 @@ def agglomerative(data):
     for i, x in enumerate(cs):
         for j in range(i+1, len(cs)):
             dist = cluster_distance(cs[i], cs[j])
+            clusters = (i, j)
+            distDictionary[clusters] = dist
             # print "dist" + str(dist) + " " + str(i) + " " + str(j)
             heap.add_clusters(cs[i], cs[j], dist)
 
@@ -231,7 +249,7 @@ def agglomerative(data):
         # add new
         for c_ind in cs:
             # print 'add new dist'
-            dist = cluster_distance(c, c_ind)
+            dist = cluster_distance_cached(c, c_ind)
             heap.add_clusters(c, c_ind, dist)
         # print c1.data
         # print c2.data
