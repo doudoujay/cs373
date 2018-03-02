@@ -34,7 +34,7 @@ class distHeap:
 
     def min_dist_clusters(self):
         minDist = heapq.heappop(self.dists)
-        print minDist
+        # print minDist
         c = self.distsMap[minDist]
 
         while(self.validCluster[c[0]] == False or self.validCluster[c[1]] == False):

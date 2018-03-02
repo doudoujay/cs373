@@ -108,7 +108,7 @@ def cluster_distance_cached(c1,c2):
             elif (x2, x1) in distDictionary:
                 d = distDictionary[(x2, x1)]
             else:
-                print "not chached"
+                # print "not chached"
                 d = dist(X[x1], X[x2])
             result += d
     return result / (len(c1.data) * len(c2.data))
@@ -175,7 +175,7 @@ def kMean(data):
 #     # iteratively pick two clusters where their distance is minimal and fuse them. The minumun distance will be decided by the average link cluster distance
 #     while(True):
 #         # break condition
-#         print len(cs)
+#         # print len(cs)
 #         if len(cs) <= K:
 #             sse = str(wc(cs, data))
 #             printResult(cs, sse)
@@ -227,7 +227,7 @@ def agglomerative(data):
             heap.add_clusters(cs[i], cs[j], dist)
 
     while True:
-        print len(cs)
+        # print len(cs)
         if len(cs) <= K:
             sse = str(wc(cs, data))
             printResult(cs, sse)
