@@ -14,3 +14,5 @@ class Tree(object):
         self.rightLabel = ""
     def isLeaf(self):
         return (self.left is None) and (self.right is None)
+    def printTree(self):
+        return 0
