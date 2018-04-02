@@ -7,11 +7,18 @@ import numpy as np
 import scipy.stats
 import random
 from Tree import Tree
+from Tree import getfullCount
 
 data = None
 X = None
 trainPercentage = 0.0
 test = None
+nodeCount = 0
+train_accu = 0.0
+test_accu = 0.0
+valid_accu = 0.0
+depthMode = False
+depthVal = 0
 
 
 def main(datasetPath, testPath, model, percentage):
@@ -19,12 +26,12 @@ def main(datasetPath, testPath, model, percentage):
     global test
     global X
     global trainPercentage
-    # save train percent
+    #  training set percentage
     trainPercentage = int(percentage) / 100.0
 
     test = pd.read_csv(testPath, sep=',', quotechar='"', header=None, engine='python',
-                              names=["workclass", "education", "marital-status", "occupation", "relationship", "race",
-                                     "sex", "native-country", "salaryLevel"])
+                       names=["workclass", "education", "marital-status", "occupation", "relationship", "race",
+                              "sex", "native-country", "salaryLevel"])
     data = pd.read_csv(datasetPath, sep=',', quotechar='"', header=None, engine='python',
                        names=["workclass", "education", "marital-status", "occupation", "relationship", "race", "sex",
                               "native-country", "salaryLevel"])
@@ -33,39 +40,92 @@ def main(datasetPath, testPath, model, percentage):
     #             'alcohol', 'open', 'salaryLevel']
     # data = data[features]
     X = data.as_matrix()
-    X = X[:1000]  # debug
+    # X = X[:1000]  # debug
     # data = data.sample(frac=1)  # shuffle the dataset for train and test
-    data = data.iloc[:1000, :]
+    # data = data.iloc[:1000, :]
     if model == "vanilla":
         vanilla()
     elif model == "depth":
-        depth()
+        depth(sys.argv[5], sys.argv[6])
     elif model == "prune":
-        prune()
+        prune(sys.argv[5])
 
 
-def id3(sub_data):
-    if check_same_label(sub_data):
-        # If all examples are have same label
+def depthHelper(datasetPath, testPath, percentage, validPercentage, depthVal):
+    global data
+    global test
+    global X
+    global trainPercentage
+    #  training set percentage
+    trainPercentage = int(percentage) / 100.0
+
+    test = pd.read_csv(testPath, sep=',', quotechar='"', header=None, engine='python',
+                       names=["workclass", "education", "marital-status", "occupation", "relationship", "race",
+                              "sex", "native-country", "salaryLevel"])
+    data = pd.read_csv(datasetPath, sep=',', quotechar='"', header=None, engine='python',
+                       names=["workclass", "education", "marital-status", "occupation", "relationship", "race", "sex",
+                              "native-country", "salaryLevel"])
+    X = data.as_matrix()
+
+    depth(validPercentage, depthVal)
+
+
+def pruneHelper(datasetPath, testPath, percentage, validPercentage):
+    global data
+    global test
+    global X
+    global trainPercentage
+    #  training set percentage
+    trainPercentage = int(percentage) / 100.0
+
+    test = pd.read_csv(testPath, sep=',', quotechar='"', header=None, engine='python',
+                       names=["workclass", "education", "marital-status", "occupation", "relationship", "race",
+                              "sex", "native-country", "salaryLevel"])
+    data = pd.read_csv(datasetPath, sep=',', quotechar='"', header=None, engine='python',
+                       names=["workclass", "education", "marital-status", "occupation", "relationship", "race", "sex",
+                              "native-country", "salaryLevel"])
+    X = data.as_matrix()
+
+    prune(validPercentage)
+
+
+def id3(sub_data, depth, validData=None):
+
+    global nodeCount
+    # print depth
+    if validData is None:
+        validData = data
+    nodeCount += 1
+    if check_same_label(sub_data) or (depthMode and depth == depthVal):
+        # leaf
         node = Tree()
         node.data = sub_data
+        node.validData = validData
+
+        node.updatePruningData()
         return node
     else:
         node = Tree()
+        node.validData = validData
+
+        node.updatePruningData()
         node.attr = best_attribute(sub_data)
         if (node.attr == None):
             return None
-        print "Best attr for node " + node.attr
+        # print "Best attr for node " + node.attr
         maxIG, label = IG_binary(sub_data, sub_data[node.attr])
         if maxIG is None and label is None:
             print "error"
 
         node.leftLabel = str(label)
         node.rightLabel = "Not " + str(label)
-        node.left = id3(sub_data.loc[sub_data[node.attr] == label])
-        node.right = id3(sub_data.loc[sub_data[node.attr] != label])
-        if(node.left is None and  node.right is None):
+        node.left = id3(sub_data.loc[sub_data[node.attr] == label], depth + 1,
+                        validData.loc[validData[node.attr] == label])
+        node.right = id3(sub_data.loc[sub_data[node.attr] != label], depth + 1,
+                         validData.loc[validData[node.attr] != label])
+        if (node.left is None and node.right is None):
             node.data = sub_data
+    # print nodeCount
     return node
 
 
@@ -73,6 +133,9 @@ def vanilla():
     """
     the full decision tree
     """
+    global train_accu
+    global nodeCount
+    global test_accu
     # splitting to training and test
     trainSize = int(trainPercentage * len(data))
     training = data.iloc[:trainSize, :]
@@ -80,33 +143,82 @@ def vanilla():
     # print len(training)
     # print len(test)
     # print_all_labels(data)
-    node = id3(training)
-    print "Training set accuracy: " + str(accuracy(node, training))
-    print "Test set accuracy: " + str(accuracy(node, test))
+    node = id3(training, 0)
+    train_accu = accuracy(node, training)
+    test_accu = accuracy(node, test)
+    print "Training set accuracy: " + str(train_accu)
+    print "Test set accuracy: " + str(test_accu)
+    nodeCount = getfullCount(node)
 
 
-
-def depth():
+def depth(validVal, depthLocalVal):
     """
     the decision tree with static depth
     """
-    depthVal = int(sys.argv[5])
+    global depthMode
+    global train_accu
+    global test_accu
+    global valid_accu
+    global depthVal
+    global nodeCount
+
+    depthMode = True
+    # validation set percentage.
+    validationPercentage = int(validVal) / 100.0
+    validSize = int(validationPercentage * len(data))
+
+    # value of maximum depth
+    depthVal = depthLocalVal
+
     # splitting to training, test and validation
     trainSize = int(trainPercentage * len(data))
-    validSize = int(int(sys.argv[4]) / 100.0 * len(data))
 
-    training, test = X[:trainSize, :], X[trainSize:, :]
-    valid, test = test[:validSize, :], test[validSize:, :]
+    training, testT = data.iloc[:trainSize, :], data.iloc[trainSize:, :]
+    valid, testT = testT.iloc[:validSize, :], testT.iloc[validSize:, :]
     # print len(training)
     # print len(valid)
-    # print len(test)
+    # print depthVal
+    node = id3(training, 0)
+    train_accu = accuracy(node, training)
+    valid_accu = accuracy(node, valid)
+    test_accu = accuracy(node, test)
+    print "Training set accuracy: " + str(train_accu)
+    print "Validation set accuracy: " + str(valid_accu)
+    print "Test set accuracy: " + str(test_accu)
+    depthMode = False
+    nodeCount = getfullCount(node)
     return 0
 
 
-def prune():
+def prune(validVal):
     """
     the decision tree with post-pruning
     """
+    global train_accu
+    global test_accu
+    global valid_accu
+    global depthVal
+    global nodeCount
+    # validation set percentage.
+    validationPercentage = int(validVal) / 100.0
+    validSize = int(validationPercentage * len(data))
+
+    # splitting to training, test and validation
+    trainSize = int(trainPercentage * len(data))
+
+    training, testT = data.iloc[:trainSize, :], data.iloc[trainSize:, :]
+    valid, testT = testT.iloc[:validSize, :], testT.iloc[validSize:, :]
+    # prune_error(valid, training)
+    # build tree
+    node = id3(training, 0, validData=valid)
+    # prune the tree
+    pruneTree(node)
+
+    train_accu = accuracy(node, training)
+    test_accu = accuracy(node, test)
+    print "Training set accuracy: " + str(train_accu)
+    print "Test set accuracy: " + str(test_accu)
+    nodeCount = getfullCount(node)
 
     return 0
 
@@ -155,7 +267,7 @@ def IG_binary(data, A):
     maxIdx = temp.index(max(temp))
     # print temp
     # print labels
-    print "Best label to split " + str(labels[maxIdx])
+    # print "Best label to split " + str(labels[maxIdx])
     return (temp[maxIdx], labels[maxIdx])
 
 
@@ -192,22 +304,62 @@ def handle_numerical(attr):
 def accuracy(node, data):
     temp = 0
     for index, row in data.iterrows():
-         if inference(node, row) == row['salaryLevel']:
-             temp += 1
-    return temp/float(len(data))
+        if inference(node, row) == row['salaryLevel']:
+            temp += 1
+    return temp / float(len(data))
+
 
 def inference(node, data_row):
     if node.isLeaf():
         values = node.data['salaryLevel'].value_counts().keys()
         return random.choice(values)
     dataLabel = data_row[node.attr]
-    if (dataLabel == node.leftLabel and node.left != None):
+    if dataLabel == node.leftLabel and node.left != None:
         # go to left node
         return inference(node.left, data_row)
-    elif (node.right != None):
+    elif node.right != None:
         # go to right node
         return inference(node.right, data_row)
 
+
+def pruneTree(node):
+    if node is None: return 0
+    if node.isLeaf():
+        # leaf here
+        if node.label == " <=50K":
+            return node.total - node.pos
+        else:
+            return node.pos
+    else:
+        error = pruneTree(node.left) + pruneTree(node.right)
+        if error < min(node.pos, (node.total - node.pos)):
+            return error
+        else:
+            # replace with leaf
+            # merge data
+            # node.validData = (node.left.validData if node.left is not None else None) + (node.right.validData if node.right is not None else None)
+            # node.updatePruningData()
+            leftD = node.left.data if node.left is not None else None
+            rightD = node.right.data if node.right is not None else None
+            node.data = pd.concat([leftD, rightD], axis=0)
+            node.left = None
+            node.right = None
+
+            if node.label == " <=50K":
+                return node.total - node.pos
+            else:
+                return node.pos
+
+
+def prune_error(validData, data):
+    valuesData = data.groupby(['salaryLevel']).size()
+    valueValidData = validData.groupby(['salaryLevel']).size()
+    print valuesData
+    print valueValidData
+    # temp = 0
+    # for index, row in data.iterrows():
+    #     if inference(node, row) == row['salaryLevel']:
+    #         temp += 1
 
 
 if __name__ == "__main__":
