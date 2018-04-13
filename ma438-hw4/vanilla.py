@@ -1,10 +1,16 @@
 import pandas as pd
 import numpy as np
-from load import load
+from perceptron import perceptron
+from util import load
 import sys
+
+
 def main(train_set, test_set, iter=2):
+    iter = int(iter)
     X_train, X_test, Y_train, Y_test = load(train_set, test_set)
-    print Y_train
+    p = perceptron(iter, X_train, Y_train)
+    p.train()
+    p.test(X_test,Y_test)
 
 
 if __name__ == "__main__":

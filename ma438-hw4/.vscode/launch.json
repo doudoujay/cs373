@@ -5,6 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "External Terminal/Console",
+            "type": "python",
+            "request": "launch",
+            "program": "vanilla.py",
+            "args": [
+                "train.csv", "test.csv"
+            ],
+            "console": "externalTerminal"
+        },
+        {
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
