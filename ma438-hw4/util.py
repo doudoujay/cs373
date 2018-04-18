@@ -27,3 +27,5 @@ def load_normal(train_set, test_set, s = 14):
     X_test, Y_test = test.iloc[:, :s], test.iloc[:, s]
 
     return (X_train, X_test, Y_train, Y_test)
+
+

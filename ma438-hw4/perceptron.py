@@ -32,7 +32,9 @@ class perceptron:
         for i in range(0, X_test.shape[0]):
             row = X_test.loc[i]
             y_hat.append(self.predict(row))
-        print zero_one(y, y_hat)
+        res = zero_one(y, y_hat)
+        # print res
+        return res
 
     def activation(self, row):
         temp = np.dot(row, self.w.T) + self.b
