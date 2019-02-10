@@ -42,7 +42,15 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.33, random_state=42)
 
     m.train(X_train, Y_train, X_test, Y_test)
+    m.save()
 
+    X_pred = testData['text']
+    X_pred = X_pred.apply(lambda x: x.lower())
+    X_pred = X_pred.apply((lambda x: re.sub('[^a-zA-z0-9\s]', '', x)))
+    X_pred = tokenizer.texts_to_sequences(X_pred.values)
+    X_pred = pad_sequences(X_pred)
+    
+    m.predict(X_pred)
 
     # automl = autosklearn.classification.AutoSklearnClassifier()
     # automl.fit(X_train, Y_train)
